@@ -6,17 +6,15 @@
 
 #include <configs/zynq-common.h>
 
-// ethernet PHY
+/* ethernet PHY */
 #undef CONFIG_PHY_MARVELL
-#define CONFIG_PHY_LANTIQ
-
-#undef CONFIG_EXTRA_ENV_SETTINGS
 
 #undef CONFIG_SYS_I2C_EEPROM_ADDR_LEN
 #undef CONFIG_SYS_I2C_EEPROM_ADDR
 #undef CONFIG_SYS_EEPROM_PAGE_WRITE_BITS
 #undef CONFIG_SYS_EEPROM_SIZE
 
+#undef CONFIG_ENV_IS_NOWHERE
 #undef CONFIG_ENV_SIZE
 #undef CONFIG_ENV_OFFSET
 
