@@ -63,7 +63,7 @@ void main_loop(void)
 	if (cli_process_fdt(&s))
 		cli_secure_boot_cmd(s);
 
-	setenv("sdboot", "echo Running script from SD... && mmcinfo && fatload mmc 0 0x2000000 u-boot.scr && source 0x2000000");
+	setenv("sdboot", "echo Running script from SD... && mmcinfo && fatload mmc 0 0x2000000 boot/u-boot.scr && source 0x2000000");
 
 	autoboot_command(s);
 
