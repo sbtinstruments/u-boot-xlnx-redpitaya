@@ -1,0 +1,31 @@
+remote_host=bbpgs0
+redpitaya=/projects/RedPitaya
+tools_path=$(redpitaya)/tools/dtc
+fpga_path=$(redpitaya)/build/fpga/logic
+processors=$(shell grep -c ^processor /proc/cpuinfo)
+cflags="-O2 -mtune=cortex-a9 -mfpu=neon -mfloat-abi=hard"
+makecmd=$(MAKE) -j $(processors) \
+	ARCH=arm CFLAGS=$(cflags)
+FPGA=$(fpga_path)/fpga.bit
+FSBL=$(fpga_path)/fsbl.elf
+
+ifeq ($(CROSS_COMPILE),arm-xilinx-linux-gnueabi-)
+$(error Xilinx toolset is unsupported. Please use the Linaro toolset.)
+else ifeq ($(CROSS_COMPILE),arm-linux-gnueabihf-)
+else ifndef CROSS_COMPILE
+$(error CROSS_COMPILE must be defined)
+endif
+
+u-boot.elf: common/*.c
+	PATH=$(PATH):$(tools_path) $(makecmd)
+	cp u-boot $@
+
+boot.bin: u-boot.elf $(FSBL) $(FPGA)
+	@echo img:{[bootloader]$(FSBL),$(FPGA),u-boot.elf} > boot_uboot.bif
+	/projects/zynq-mkbootimage/mkbootimage boot_uboot.bif $@
+
+.PHONY: install-remote
+install-remote: boot.bin
+	ssh $(remote_host) "mount -o rw,remount /media/boot"
+	scp boot.bin $(remote_host):/media/boot/boot.bin
+	ssh $(remote_host) "mount -o ro,remount /media/boot"
